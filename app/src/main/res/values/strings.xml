@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">MySleepTimer</string>
+    <string name="tile_label">Sleep Timer</string>
+</resources>
