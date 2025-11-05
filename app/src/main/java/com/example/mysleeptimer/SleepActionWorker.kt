@@ -71,6 +71,9 @@ class SleepActionWorker(appContext: Context, workerParams: WorkerParameters) :
             Log.e("SleepActionWorker", "MyAccessibilityService instance is not available.")
         }
 
+        deleteNotification(this.applicationContext)
+
+
         //**********************************************************
 //        serviceInstance?.onServiceConnected()
 //        serviceInstance?.onDestroy()

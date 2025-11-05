@@ -14,7 +14,7 @@ import androidx.core.content.edit
 
 class SleepTimerTileService : TileService() {
 
-    private val DURATION_CYCLE_MINUTES = listOf(1, 10, 30, 60) // Cycle values in minutes
+    private val DURATION_CYCLE_MINUTES = listOf(1, 10, 30, 60, 90, 120) // Cycle values in minutes
 
     private fun getCurrentDuration(): Int {
         return getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getInt(
@@ -31,7 +31,11 @@ class SleepTimerTileService : TileService() {
             )
         }
     }
+    override fun onTileAdded(){
+        super.onTileAdded()
+        createNotificationChannel(this)
 
+    }
     // Called when the tile becomes visible in the Quick Settings panel
     override fun onStartListening() {
         super.onStartListening()
@@ -111,6 +115,7 @@ class SleepTimerTileService : TileService() {
      * @param durationMinutes The time in minutes until the SleepActionWorker should run.
      */
     private fun startSleepTimer(durationMinutes: Long) {
+        showNotification(this, durationMinutes)
         // 1. Define the work request
         val sleepWorkRequest = OneTimeWorkRequestBuilder<SleepActionWorker>()
             .setInitialDelay(durationMinutes, TimeUnit.MINUTES)

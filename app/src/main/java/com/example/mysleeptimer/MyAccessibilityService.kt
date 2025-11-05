@@ -65,11 +65,11 @@ class MyAccessibilityService : AccessibilityService() {
     // Run when the screen changes.
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         // Handle accessibility events here
-        Log.d(TAG, "New window state detected.");
+        Log.d(TAG, "New window state detected.")
     }
 
     override fun onInterrupt() {
         // Handle service interruption here
-        Log.w(TAG, "Accessibility Service interrupted. Releasing resources.");
+        Log.w(TAG, "Accessibility Service interrupted. Releasing resources.")
     }
 }
