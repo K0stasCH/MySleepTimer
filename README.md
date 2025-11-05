@@ -56,5 +56,13 @@ Android requires the **Accessibility Service** permission for the app to send th
 
 📸 Screenshots
 --------------
-![Description of Screenshot 1](screenshots/1.png)
-![Description of Screenshot 2](screenshots/2.png)
+<table>
+  <tr>
+    <td style="padding-right: 10px;">
+      <img src="screenshots/1.png" alt="Screenshot 1 Description" width="300">
+    </td>
+    <td>
+      <img src="screenshots/2.png" alt="Screenshot 2 Description" width="300">
+    </td>
+  </tr>
+</table>
