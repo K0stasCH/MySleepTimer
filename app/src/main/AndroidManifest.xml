@@ -37,6 +37,5 @@
                 android:resource="@xml/accessibility_service_config" />
         </service>
 
-
     </application>
 </manifest>
