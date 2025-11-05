@@ -19,21 +19,16 @@ import android.view.KeyEvent
 class SleepActionWorker(appContext: Context, workerParams: WorkerParameters) :
     Worker(appContext, workerParams) {
 
+    companion object {
+        private const val TAG = "SleepActionWorker"
+    }
+
     override fun doWork(): Result {
-        Log.i("SleepActionWorker", "--- Sleep Timer Action Triggered ---")
+        Log.i(TAG, "--- Sleep Timer Action Triggered ---")
 
-        Log.i("SleepActionWorker", "Attempting to stop media playback now!")
-        // Simulate media key presses (PAUSE)
-        val audioManager = applicationContext.getSystemService(Context.AUDIO_SERVICE) as? AudioManager
-        audioManager?.let { manager ->
-            manager.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PAUSE))
-            manager.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PAUSE))
-            Log.i("SleepActionWorker", "Media PAUSE key events dispatched.")
-        } ?: run {
-            Log.e("SleepActionWorker", "Could not get AudioManager service.")
-        }
+        sleepSequence()
 
-        Log.i("SleepActionWorker", "Sleep timer work finished.")
+        Log.i(TAG, "--- Sleep timer work finished ---")
 
         // Reset the saved duration to OFF_STATE in shared preferences
         applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -41,7 +36,7 @@ class SleepActionWorker(appContext: Context, workerParams: WorkerParameters) :
                 putInt(PREFS_CURRENT_DURATION, OFF_STATE)
             }
 
-        Log.i("SleepActionWorker", "Preferences reset to OFF_STATE.")
+        Log.i(TAG, "Preferences reset to OFF_STATE.")
 
         // Request the Android system to update the tile UI
         // This forces the system to call onStartListening() on SleepTimerTileService
@@ -49,7 +44,36 @@ class SleepActionWorker(appContext: Context, workerParams: WorkerParameters) :
             applicationContext,
             ComponentName(applicationContext, SleepTimerTileService::class.java)
         )
-
         return Result.success()
+    }
+
+    fun sleepSequence(){
+        // Simulate media key presses (PAUSE)
+        Log.i(TAG, "Attempting to stop media playback now!")
+        val audioManager = applicationContext.getSystemService(Context.AUDIO_SERVICE) as? AudioManager
+        audioManager?.let { manager ->
+            manager.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PAUSE))
+            manager.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PAUSE))
+            Log.i(TAG, "Media PAUSE key events dispatched.")
+        } ?: run {
+            Log.e(TAG, "Could not get AudioManager service.")
+        }
+
+        // Get the singleton instance of your service
+        val serviceInstance = MyAccessibilityService.getSharedInstance()
+        // Check if the service is running and then call the method
+        if (serviceInstance != null) {
+            serviceInstance.pressBackButton()
+            serviceInstance.pressBackButton()
+            serviceInstance.pressHomeButton()
+            serviceInstance.screenLock()
+        } else {
+            Log.e("SleepActionWorker", "MyAccessibilityService instance is not available.")
+        }
+
+        //**********************************************************
+//        serviceInstance?.onServiceConnected()
+//        serviceInstance?.onDestroy()
+        //**********************************************************
     }
 }

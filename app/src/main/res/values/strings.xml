@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">MySleepTimer</string>
     <string name="tile_label">Sleep Timer</string>
+
+    <string name="accessibility_service_description">Enabling it, give the access to perform Global Actions (like: pressing HOME_BUTTON, LOCKING_SCREEN, etc) </string>
+    <string name="accessibility_service_label">MySleepTimer</string>
 </resources>
