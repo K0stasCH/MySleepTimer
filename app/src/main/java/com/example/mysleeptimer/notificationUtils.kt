@@ -12,6 +12,11 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
+import android.app.PendingIntent
+import android.content.Intent
+import android.provider.Settings
+
+
 
 // Use a unique ID for the Notification Channel (required on Android 8.0+)
 private const val CHANNEL_ID = "MySleepTimer"
@@ -45,7 +50,7 @@ fun createNotificationChannel(context: Context) {
  * Step 2: CREATE and SHOW THE NOTIFICATION
  * Uses NotificationCompat.Builder for backward compatibility.
  */
-fun showNotification(context: Context, durationMinutes: Long) {
+fun showTimerNotification(context: Context, durationMinutes: Long) {
     // Build the notification content.
     val offTime = calculateFutureTimeFromNow(durationMinutes)
     val builder = NotificationCompat.Builder(context, CHANNEL_ID)
@@ -64,7 +69,39 @@ fun showNotification(context: Context, durationMinutes: Long) {
         // Show the notification. The NOTIFICATION_ID is crucial for updating or canceling it later.
         notify(NOTIFICATION_ID, builder.build())
     }
-    Log.d(TAG, "Show Notification")
+    Log.d(TAG, "Show Timer Notification")
+}
+
+fun showAccessibilityNotification(context: Context) {
+    // 1. Define the action: Open Accessibility Settings
+    val settingsIntent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS).apply {
+        // Set necessary flags for starting an Activity from a Service
+        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+    }
+
+    // 2. Create a PendingIntent to execute the action when the notification is tapped
+    val pendingIntent: PendingIntent = PendingIntent.getActivity(
+        context,
+        0,
+        settingsIntent,
+        PendingIntent.FLAG_IMMUTABLE // Use FLAG_IMMUTABLE for modern Android versions
+    )
+
+    // 3. Build the Notification
+    val notification = NotificationCompat.Builder(context, CHANNEL_ID)
+        .setSmallIcon(R.drawable.clock_icon) // Use a proper icon
+        .setContentTitle("Permission Required")
+        .setContentText("Tap to enable 'MySleepTimer' Accessibility Service.")
+        .setPriority(NotificationCompat.PRIORITY_HIGH)
+        .setContentIntent(pendingIntent) // Set the intent to run when tapped
+        .setAutoCancel(true) // Automatically removes the notification when tapped
+        .build()
+
+    // 4. Show the Notification
+    val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    notificationManager.notify(NOTIFICATION_ID, notification)
+
+    Log.d(TAG, "Show Accessibility Notification")
 }
 
 

@@ -31,11 +31,14 @@ class SleepTimerTileService : TileService() {
             )
         }
     }
+
+
+
     override fun onTileAdded(){
         super.onTileAdded()
         createNotificationChannel(this)
-
     }
+
     // Called when the tile becomes visible in the Quick Settings panel
     override fun onStartListening() {
         super.onStartListening()
@@ -69,18 +72,22 @@ class SleepTimerTileService : TileService() {
         val currentDuration = getCurrentDuration()
         var nextDuration = OFF_STATE
 
-        if (currentDuration == OFF_STATE) {
-            // Off -> Start of the cycle (10 min)
-            nextDuration = DURATION_CYCLE_MINUTES.first()
+        if (!isAccessibilityServiceEnabled(this, MyAccessibilityService::class.java)) {
+            nextDuration = OFF_STATE
+            showAccessibilityNotification(this)
         } else {
-            // Find current index and move to next
-            val currentIndex = DURATION_CYCLE_MINUTES.indexOf(currentDuration)
-            if (currentIndex < DURATION_CYCLE_MINUTES.lastIndex) {
-                nextDuration = DURATION_CYCLE_MINUTES[currentIndex + 1]
+            if (currentDuration == OFF_STATE) {
+                // Off -> Start of the cycle (10 min)
+                nextDuration = DURATION_CYCLE_MINUTES.first()
+            } else {
+                // Find current index and move to next
+                val currentIndex = DURATION_CYCLE_MINUTES.indexOf(currentDuration)
+                if (currentIndex < DURATION_CYCLE_MINUTES.lastIndex) {
+                    nextDuration = DURATION_CYCLE_MINUTES[currentIndex + 1]
+                }
+                // If at the end of the list (60 min), nextDuration remains OFF_STATE (0)
             }
-            // If at the end of the list (60 min), nextDuration remains OFF_STATE (0)
         }
-
         if (nextDuration != OFF_STATE) {
             // A duration is set, start the timer
             startSleepTimer(nextDuration.toLong())
@@ -91,6 +98,7 @@ class SleepTimerTileService : TileService() {
 
         saveDuration(nextDuration)
         updateTileState(nextDuration)
+
     }
 
     // --- Helper Functions for Tile Management ---
@@ -115,7 +123,7 @@ class SleepTimerTileService : TileService() {
      * @param durationMinutes The time in minutes until the SleepActionWorker should run.
      */
     private fun startSleepTimer(durationMinutes: Long) {
-        showNotification(this, durationMinutes)
+        showTimerNotification(this, durationMinutes)
         // 1. Define the work request
         val sleepWorkRequest = OneTimeWorkRequestBuilder<SleepActionWorker>()
             .setInitialDelay(durationMinutes, TimeUnit.MINUTES)
