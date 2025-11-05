@@ -14,7 +14,7 @@ import androidx.core.content.edit
 
 class SleepTimerTileService : TileService() {
 
-    private val DURATION_CYCLE_MINUTES = listOf(1, 10, 30, 60, 90, 120) // Cycle values in minutes
+    private val DURATION_CYCLE_MINUTES = listOf(1, 10, 30, 45, 60, 90, 120) // Cycle values in minutes
 
     private fun getCurrentDuration(): Int {
         return getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getInt(
